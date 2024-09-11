@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 10px;
+        }
+        .toolbar {
+            margin-bottom: 10px;
+        }
+        .toolbar button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        .toolbar button:hover {
+            background-color: #45a049;
+        }
+        .editor {
+            border: 1px solid #ccc;
+            padding: 10px;
+            min-height: 200px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="toolbar">
+    <button onclick="format('bold')">Bold</button>
+    <button onclick="format('italic')">Italic</button>
+    <button onclick="format('underline')">Underline</button>
+</div>
+
+<div id="editor" class="editor" contenteditable="true">
+    This is a simple text editor. You can edit this text.
+</div>
+
+<script>
+    function format(command) {
+        document.execCommand(command, false, null);
+    }
+</script>
+
+</body>
+</html>
