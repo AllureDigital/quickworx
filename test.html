@@ -1,15 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
             margin: 0;
+            background-color: #f7f7f7;
         }
         .toolbar {
             border-bottom: 1px solid #ddd;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            padding: 8px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
         }
         .toolbar button, .toolbar select {
             background-color: #4CAF50;
@@ -17,65 +28,153 @@
             border: none;
             padding: 8px;
             cursor: pointer;
-            margin-right: 5px;
             font-size: 14px;
+            border-radius: 4px;
+            margin: 0;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
         }
         .toolbar button:hover, .toolbar select:hover {
             background-color: #45a049;
         }
+        .toolbar button i {
+            font-size: 16px;
+        }
+        .toolbar select {
+            font-size: 14px;
+            padding: 5px;
+            height: 34px;
+        }
+        .color-picker-wrapper {
+            position: relative;
+            z-index: 10; /* Ensure the color picker stays on top */
+        }
+        .color-picker {
+            position: absolute;
+            top: 36px;
+            left: 0;
+            display: none;
+            grid-template-columns: repeat(5, 24px);
+            gap: 4px;
+            background: white;
+            padding: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ddd;
+            z-index: 100; /* Make sure the palette is on top */
+        }
+        .color-picker div {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
         .editor {
-            border: 1px solid #ccc;
+            border: 1px solid #ddd;
+            border-radius: 4px;
             padding: 10px;
             min-height: 300px;
             width: 100%;
             box-sizing: border-box;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: auto;
+            position: relative;
+            cursor: text;
+        }
+        .editor ul, .editor ol {
+            padding-left: 40px; /* Ensure proper list alignment */
+            margin: 0;
+        }
+        .editor ul li, .editor ol li {
+            list-style-position: inside; /* Align bullets and text */
         }
     </style>
 </head>
 <body>
 
 <div class="toolbar">
-    <button onclick="format('bold')">Bold</button>
-    <button onclick="format('italic')">Italic</button>
-    <button onclick="format('underline')">Underline</button>
-    <button onclick="format('strikeThrough')">Strikethrough</button>
-    <button onclick="format('insertOrderedList')">Numbered List</button>
-    <button onclick="format('insertUnorderedList')">Bulleted List</button>
-    <button onclick="format('justifyLeft')">Align Left</button>
-    <button onclick="format('justifyCenter')">Align Center</button>
-    <button onclick="format('justifyRight')">Align Right</button>
-    <button onclick="format('createLink')">Insert Link</button>
-    <button onclick="format('unlink')">Remove Link</button>
-    <select onchange="changeFontSize(this.value)">
+    <!-- Bold, Italic, Underline, Strikethrough -->
+    <button onclick="format('bold')" title="Bold"><i class="fas fa-bold"></i></button>
+    <button onclick="format('italic')" title="Italic"><i class="fas fa-italic"></i></button>
+    <button onclick="format('underline')" title="Underline"><i class="fas fa-underline"></i></button>
+    <button onclick="format('strikeThrough')" title="Strikethrough"><i class="fas fa-strikethrough"></i></button>
+    
+    <!-- Ordered and Unordered Lists -->
+    <button onclick="format('insertOrderedList')" title="Numbered List"><i class="fas fa-list-ol"></i></button>
+    <button onclick="format('insertUnorderedList')" title="Bulleted List"><i class="fas fa-list-ul"></i></button>
+    
+    <!-- Text Alignment -->
+    <button onclick="format('justifyLeft')" title="Align Left"><i class="fas fa-align-left"></i></button>
+    <button onclick="format('justifyCenter')" title="Align Center"><i class="fas fa-align-center"></i></button>
+    <button onclick="format('justifyRight')" title="Align Right"><i class="fas fa-align-right"></i></button>
+    
+    <!-- Insert and Unlink URL -->
+    <button onclick="createLink()" title="Insert Link"><i class="fas fa-link"></i></button>
+    <button onclick="format('unlink')" title="Remove Link"><i class="fas fa-unlink"></i></button>
+
+    <!-- Text size dropdown -->
+    <select onchange="changeFontSize(this.value)" title="Font Size">
         <option value="">Font Size</option>
         <option value="1">Small</option>
-        <option value="3" selected>Normal</option>
+        <option value="3" selected>Medium</option>
         <option value="5">Large</option>
     </select>
-    <select onchange="changeTextColor(this.value)">
-        <option value="">Text Color</option>
-        <option value="red">Red</option>
-        <option value="blue">Blue</option>
-        <option value="green">Green</option>
-        <option value="black" selected>Black</option>
-    </select>
+
+    <!-- Color palette for text color -->
+    <div class="color-picker-wrapper">
+        <button onclick="toggleColorPicker()" title="Text Color"><i class="fas fa-palette"></i></button>
+        <div class="color-picker">
+            <div style="background-color: red;" onclick="changeTextColor('red')"></div>
+            <div style="background-color: blue;" onclick="changeTextColor('blue')"></div>
+            <div style="background-color: green;" onclick="changeTextColor('green')"></div>
+            <div style="background-color: black;" onclick="changeTextColor('black')"></div>
+            <div style="background-color: orange;" onclick="changeTextColor('orange')"></div>
+        </div>
+    </div>
 </div>
 
-<div id="editor" class="editor" contenteditable="true">
-    This is a rich text editor. You can edit this text.
-</div>
+<!-- Content-editable editor -->
+<div id="editor" class="editor" contenteditable="true"></div>
+
+<!-- Button to save the content -->
+<button onclick="saveContent()">Save Content</button>
 
 <script>
+    // Format function for standard commands like bold, italic, underline
     function format(command) {
         document.execCommand(command, false, null);
     }
 
+    // Create a hyperlink
+    function createLink() {
+        const url = prompt("Enter the URL:");
+        if (url) {
+            document.execCommand('createLink', false, url);
+        }
+    }
+
+    // Change font size
     function changeFontSize(size) {
         document.execCommand('fontSize', false, size);
     }
 
+    // Change text color based on color palette
     function changeTextColor(color) {
         document.execCommand('foreColor', false, color);
+        toggleColorPicker();  // Close the color picker after selecting
+    }
+
+    // Toggle the visibility of the color picker
+    function toggleColorPicker() {
+        const colorPicker = document.querySelector('.color-picker');
+        colorPicker.style.display = colorPicker.style.display === 'grid' ? 'none' : 'grid';
+    }
+
+    // Save the content from the editor to a variable in Appian
+    function saveContent() {
+        const editorContent = document.getElementById('editor').innerHTML;
+        window.Appian.Component.saveValue(editorContent);
     }
 </script>
 
