@@ -4,27 +4,31 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            padding: 10px;
+            padding: 20px;
+            margin: 0;
         }
         .toolbar {
+            border-bottom: 1px solid #ddd;
             margin-bottom: 10px;
         }
-        .toolbar button {
+        .toolbar button, .toolbar select {
             background-color: #4CAF50;
             color: white;
             border: none;
             padding: 8px;
             cursor: pointer;
             margin-right: 5px;
+            font-size: 14px;
         }
-        .toolbar button:hover {
+        .toolbar button:hover, .toolbar select:hover {
             background-color: #45a049;
         }
         .editor {
             border: 1px solid #ccc;
             padding: 10px;
-            min-height: 200px;
+            min-height: 300px;
             width: 100%;
+            box-sizing: border-box;
         }
     </style>
 </head>
@@ -34,15 +38,44 @@
     <button onclick="format('bold')">Bold</button>
     <button onclick="format('italic')">Italic</button>
     <button onclick="format('underline')">Underline</button>
+    <button onclick="format('strikeThrough')">Strikethrough</button>
+    <button onclick="format('insertOrderedList')">Numbered List</button>
+    <button onclick="format('insertUnorderedList')">Bulleted List</button>
+    <button onclick="format('justifyLeft')">Align Left</button>
+    <button onclick="format('justifyCenter')">Align Center</button>
+    <button onclick="format('justifyRight')">Align Right</button>
+    <button onclick="format('createLink')">Insert Link</button>
+    <button onclick="format('unlink')">Remove Link</button>
+    <select onchange="changeFontSize(this.value)">
+        <option value="">Font Size</option>
+        <option value="1">Small</option>
+        <option value="3" selected>Normal</option>
+        <option value="5">Large</option>
+    </select>
+    <select onchange="changeTextColor(this.value)">
+        <option value="">Text Color</option>
+        <option value="red">Red</option>
+        <option value="blue">Blue</option>
+        <option value="green">Green</option>
+        <option value="black" selected>Black</option>
+    </select>
 </div>
 
 <div id="editor" class="editor" contenteditable="true">
-    This is a simple text editor. You can edit this text.
+    This is a rich text editor. You can edit this text.
 </div>
 
 <script>
     function format(command) {
         document.execCommand(command, false, null);
+    }
+
+    function changeFontSize(size) {
+        document.execCommand('fontSize', false, size);
+    }
+
+    function changeTextColor(color) {
+        document.execCommand('foreColor', false, color);
     }
 </script>
 
